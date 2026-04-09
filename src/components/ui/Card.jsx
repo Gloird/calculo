@@ -5,7 +5,7 @@
  */
 export default function Card({ icon, iconBg = 'bg-blue-50 border border-blue-100', title, subtitle, children }) {
   return (
-    <div className="card bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div className="card backdrop-blur-[1px] rounded-2xl shadow-sm p-6">
       <div className="flex items-center gap-3 mb-5">
         <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center text-xl`}>
           {icon}

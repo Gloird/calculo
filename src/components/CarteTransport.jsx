@@ -1,9 +1,26 @@
 import Card from './ui/Card.jsx';
 import InputField from './ui/InputField.jsx';
 
+function RealExpenseField({ line, field, label, onChange, step = '1' }) {
+  return (
+    <div>
+      <label htmlFor={`${field}_${line.id}`} className="lbl">{label}</label>
+      <input
+        id={`${field}_${line.id}`}
+        className="inp"
+        type="number"
+        min="0"
+        step={step}
+        value={line[field] || ''}
+        onChange={(e) => onChange(line.id, field, e.target.value)}
+      />
+    </div>
+  );
+}
+
 function TransportLine({ line, vehicles, onChange, onRemove, canRemove }) {
   return (
-    <div className="border border-gray-100 rounded-lg p-3 bg-gray-50/60 space-y-3">
+    <div className="transport-line-panel rounded-lg p-3 space-y-3">
       <div>
         <label htmlFor={`mode_${line.id}`} className="lbl">Mode ligne</label>
         <select
@@ -62,15 +79,15 @@ function TransportLine({ line, vehicles, onChange, onRemove, canRemove }) {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <input className="inp" type="number" min="0" placeholder="Carburant" value={line.carburant || ''} onChange={(e) => onChange(line.id, 'carburant', e.target.value)} />
-          <input className="inp" type="number" min="0" placeholder="Entretien" value={line.entretien || ''} onChange={(e) => onChange(line.id, 'entretien', e.target.value)} />
-          <input className="inp" type="number" min="0" placeholder="Réparations" value={line.reparations || ''} onChange={(e) => onChange(line.id, 'reparations', e.target.value)} />
-          <input className="inp" type="number" min="0" placeholder="Assurance" value={line.assurance || ''} onChange={(e) => onChange(line.id, 'assurance', e.target.value)} />
-          <input className="inp" type="number" min="0" placeholder="Pneus" value={line.pneus || ''} onChange={(e) => onChange(line.id, 'pneus', e.target.value)} />
-          <input className="inp" type="number" min="0" placeholder="LOA/LLD" value={line.loaLld || ''} onChange={(e) => onChange(line.id, 'loaLld', e.target.value)} />
-          <input className="inp" type="number" min="0" placeholder="Usage pro %" value={line.usageProPercent || ''} onChange={(e) => onChange(line.id, 'usageProPercent', e.target.value)} />
-          <input className="inp" type="number" min="0" placeholder="Amortissement achat" value={line.amortissementAchat || ''} onChange={(e) => onChange(line.id, 'amortissementAchat', e.target.value)} />
-          <input className="inp" type="number" min="0" placeholder="Plafond CO2" value={line.plafondCO2 || ''} onChange={(e) => onChange(line.id, 'plafondCO2', e.target.value)} />
+          <RealExpenseField line={line} field="carburant" label="Carburant (€)" onChange={onChange} />
+          <RealExpenseField line={line} field="entretien" label="Entretien (€)" onChange={onChange} />
+          <RealExpenseField line={line} field="reparations" label="Réparations (€)" onChange={onChange} />
+          <RealExpenseField line={line} field="assurance" label="Assurance (€)" onChange={onChange} />
+          <RealExpenseField line={line} field="pneus" label="Pneus (€)" onChange={onChange} />
+          <RealExpenseField line={line} field="loaLld" label="LOA/LLD (€)" onChange={onChange} />
+          <RealExpenseField line={line} field="usageProPercent" label="Usage pro (%)" onChange={onChange} step="0.1" />
+          <RealExpenseField line={line} field="amortissementAchat" label="Amortissement achat (€)" onChange={onChange} />
+          <RealExpenseField line={line} field="plafondCO2" label="Plafond CO2 (€)" onChange={onChange} />
           <InputField
             id={`interets_${line.id}`}
             label="Interets d'emprunt"
@@ -82,8 +99,8 @@ function TransportLine({ line, vehicles, onChange, onRemove, canRemove }) {
             value={line.interetsEmprunt || ''}
             onChange={(e) => onChange(line.id, 'interetsEmprunt', e.target.value)}
           />
-          <input className="inp" type="number" min="0" placeholder="Parking/Box" value={line.parkingBox || ''} onChange={(e) => onChange(line.id, 'parkingBox', e.target.value)} />
-          <input className="inp" type="number" min="0" placeholder="Péages" value={line.peages || ''} onChange={(e) => onChange(line.id, 'peages', e.target.value)} />
+          <RealExpenseField line={line} field="parkingBox" label="Parking / Box (€)" onChange={onChange} />
+          <RealExpenseField line={line} field="peages" label="Péages (€)" onChange={onChange} />
         </div>
       )}
 

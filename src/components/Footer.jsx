@@ -4,15 +4,15 @@
  */
 export default function Footer({ onPDF, pdfMode, onPdfModeChange }) {
   return (
-    <footer className="bg-white border-t border-gray-100 shadow-inner">
+    <footer className="app-footer shadow-inner">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
 
         <div className="text-center sm:text-left">
-          <p className="text-xs text-gray-400">
+          <p className="text-xs app-footer-copy">
             Calculo · Toutes les données restent sur votre appareil (localStorage uniquement).
             Aucune donnée n'est transmise.
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className="text-xs app-footer-copy mt-0.5">
             Ce simulateur est une aide au calcul. Vérifiez les valeurs officielles sur{' '}
             <a
               href="https://www.impots.gouv.fr"
@@ -24,7 +24,7 @@ export default function Footer({ onPDF, pdfMode, onPdfModeChange }) {
             </a>
             .
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className="text-xs app-footer-copy mt-0.5">
             L'optimisation inclut les frais de double résidence et d'amortissement de matériel selon les directives du BOFIP 2025/2026.
           </p>
         </div>

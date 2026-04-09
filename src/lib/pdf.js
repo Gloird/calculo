@@ -26,6 +26,18 @@ const C_RED    = [220, 38,  38];
 const C_GREEN  = [5,   150, 105];
 const C_BG_REC = [209, 250, 229];
 
+function formatDetailedItems(items = []) {
+  if (!Array.isArray(items) || items.length === 0) return '\u2013';
+  return items
+    .map((item) => `${item.label || 'Sans libellé'} : ${eur(Number(item.amount || 0))}`)
+    .join(' · ');
+}
+
+function sumDetailedItems(items = []) {
+  if (!Array.isArray(items)) return 0;
+  return rond(items.reduce((s, item) => s + Number(item.amount || 0), 0));
+}
+
 /**
  * Génère et télécharge le PDF.
  * @param {object} resultats - objet retourné par useCalculo.resultats
@@ -125,13 +137,79 @@ export function genererPDF(resultats, mode = 'personne', membreNom = 'Membre') {
   });
   y = doc.lastAutoTable.finalY + 8;
 
-  // ═══ 1.b Justifications (poste/calc/source) ═════════════════════════════════
+  // ═══ 1.b Détails des montants saisis (multi-lignes) ════════════════════════
+  const formDetails = r.formDetails || {};
+  const detailThemes = [
+    {
+      label: 'Charges bureau',
+      items: formDetails.chargesBureauItems,
+      source: 'BOI-RSA-BASE-30-50-10, §510 / Loi de Finances 2026',
+    },
+    {
+      label: 'Abonnements bureau (Tel/Net)',
+      items: formDetails.abonnementsBureauItems,
+      source: 'CGI Art. 83-3° / BOI-RSA-BASE-30-50-20',
+    },
+    {
+      label: 'Charges double residence',
+      items: formDetails.chargesDoubleResidenceItems,
+      source: 'BOI-RSA-BASE-30-50-10, §510 / Loi de Finances 2026',
+    },
+    {
+      label: 'Materiel professionnel',
+      items: formDetails.prixMaterielItems,
+      source: 'BOI-BIC-AMT-20-20 / CGI Art. 39',
+    },
+    {
+      label: 'Equipement bureau',
+      items: formDetails.prixEquipementBureauItems,
+      source: 'BOI-BIC-AMT-20-20 / CGI Art. 39',
+    },
+    {
+      label: 'Autres frais detailles',
+      items: formDetails.autresFraisItems,
+      source: 'CGI Art. 83-3° / BOI-RSA-BASE-30-50',
+    },
+  ].filter((theme) => Array.isArray(theme.items) && theme.items.length > 0);
+
+  if (detailThemes.length > 0) {
+    if (y > 220) { doc.addPage(); y = 20; }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...C_DARK);
+    doc.text('1.b Detail des Montants Saisis', mX, y);
+    y += 3;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Thematique', 'Total saisi', 'Details postes', 'Source legale']],
+      body: detailThemes.map((theme) => [
+        theme.label,
+        eur(sumDetailedItems(theme.items)),
+        formatDetailedItems(theme.items),
+        theme.source,
+      ]),
+      margin: { left: mX, right: mX },
+      headStyles: { fillColor: C_BLUE, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 7, textColor: C_GREY, cellPadding: 2 },
+      columnStyles: {
+        0: { cellWidth: 35 },
+        1: { cellWidth: 24, halign: 'right' },
+        2: { cellWidth: 76 },
+        3: { cellWidth: 47 },
+      },
+      styles: { overflow: 'linebreak', lineWidth: 0.1, lineColor: [220, 220, 220] },
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  }
+
+  // ═══ 1.c Justifications (poste/calc/source) ═════════════════════════════════
   if (Array.isArray(r.justificatifs) && r.justificatifs.length > 0) {
     if (y > 220) { doc.addPage(); y = 20; }
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
     doc.setTextColor(...C_DARK);
-    doc.text('1.b Blocs de Justification', mX, y);
+    doc.text('1.c Blocs de Justification', mX, y);
     y += 3;
 
     const lignesJustif = r.justificatifs.map((j) => [

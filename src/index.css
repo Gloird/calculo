@@ -4,38 +4,158 @@
 @tailwind components;
 @tailwind utilities;
 
+:root,
+[data-theme='contrast'] {
+  --app-bg-1: #eef3f8;
+  --app-fg: #1f2937;
+  --surface-1: rgba(248, 250, 252, 0.95);
+  --surface-2: #f1f5f9;
+  --border-soft: #d8e1ec;
+  --field-bg: #e2e8f0;
+  --field-bg-hover: #f8fafc;
+  --field-bg-focus: #f8fafc;
+  --text-muted: #6b7280;
+  --text-soft: #526174;
+  --text-faint: #435164;
+}
+
+[data-theme='warm'] {
+  --app-bg-1: #f7f1e8;
+  --app-fg: #3f3427;
+  --surface-1: rgba(255, 252, 246, 0.96);
+  --surface-2: #fbf4e8;
+  --border-soft: #e7d9c0;
+  --field-bg: #f5ecdd;
+  --field-bg-hover: #fffaf0;
+  --field-bg-focus: #fffaf0;
+  --text-muted: #8a7458;
+  --text-soft: #776246;
+  --text-faint: #66523a;
+}
+
+[data-theme='dark'] {
+  --app-bg-1: #0b1220;
+  --app-fg: #e5e7eb;
+  --surface-1: rgba(15, 23, 42, 0.96);
+  --surface-2: #1e293b;
+  --border-soft: #334155;
+  --field-bg: #1f2937;
+  --field-bg-hover: #111827;
+  --field-bg-focus: #0f172a;
+  --text-muted: #c2cfdd;
+  --text-soft: #d6e0ec;
+  --text-faint: #e5edf7;
+}
+
 @layer base {
   body {
     font-family: 'Inter', system-ui, sans-serif;
+    background:
+      radial-gradient(1200px 500px at 0% -10%, rgba(148, 163, 184, 0.16), transparent 60%),
+      radial-gradient(900px 420px at 100% -15%, rgba(125, 211, 252, 0.12), transparent 65%),
+      var(--app-bg-1);
+    color: var(--app-fg);
   }
 }
 
 @layer components {
   .card {
-    transition: box-shadow 0.2s, transform 0.2s;
+    background: var(--surface-1);
+    border: 1px solid var(--border-soft);
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
   }
   .card:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+    border-color: color-mix(in srgb, var(--border-soft), #94a3b8 35%);
     transform: translateY(-1px);
   }
   .inp {
-    @apply w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 bg-gray-50 outline-none transition-all duration-150;
+    @apply w-full rounded-xl px-4 py-2.5 text-sm outline-none transition-all duration-150;
+    border: 1px solid var(--border-soft);
+    color: var(--app-fg);
+    background: var(--field-bg);
   }
   .inp:focus {
-    @apply bg-white border-blue-500 ring-2 ring-blue-500/20;
+    @apply border-blue-500 ring-2 ring-blue-500/20;
+    background: var(--field-bg-focus);
   }
   .inp:hover:not(:focus) {
-    @apply bg-white;
+    background: var(--field-bg-hover);
   }
   .lbl {
-    @apply block text-[0.7rem] font-bold uppercase tracking-widest text-gray-500 mb-1.5;
+    @apply block text-[0.7rem] font-bold uppercase tracking-widest mb-1.5;
+    color: var(--text-muted);
   }
   .hint {
-    @apply text-[0.7rem] text-gray-400 mt-1;
+    @apply text-[0.7rem] mt-1;
+    color: color-mix(in srgb, var(--text-muted), #ffffff 10%);
   }
+  .app-footer {
+    background: var(--surface-1);
+    border-top: 1px solid var(--border-soft);
+  }
+  .app-footer-copy {
+    color: var(--text-muted);
+  }
+
+  .transport-line-panel {
+    border: 1px solid var(--border-soft);
+    background: color-mix(in srgb, var(--surface-2), var(--surface-1) 35%);
+  }
+
+  /* Améliore la lisibilité des textes secondaires sur fonds gris. */
+  .text-gray-500 {
+    color: var(--text-soft) !important;
+  }
+
+  .text-gray-400 {
+    color: var(--text-faint) !important;
+  }
+}
+
+[data-theme='dark'] .bg-white,
+[data-theme='dark'] .bg-slate-50\/95,
+[data-theme='dark'] .bg-slate-50,
+[data-theme='dark'] .bg-gray-50,
+[data-theme='dark'] .bg-indigo-50,
+[data-theme='dark'] .bg-blue-50 {
+  background-color: var(--surface-2) !important;
+}
+
+[data-theme='dark'] .text-gray-800,
+[data-theme='dark'] .text-gray-900,
+[data-theme='dark'] .text-indigo-800,
+[data-theme='dark'] .text-blue-800 {
+  color: #e5e7eb !important;
+}
+
+[data-theme='dark'] .text-gray-700,
+[data-theme='dark'] .text-gray-600 {
+  color: #dbe4f0 !important;
+}
+
+[data-theme='dark'] .border-gray-100,
+[data-theme='dark'] .border-gray-200,
+[data-theme='dark'] .border-slate-200,
+[data-theme='dark'] .border-sky-100,
+[data-theme='dark'] .border-blue-100,
+[data-theme='dark'] .border-indigo-200,
+[data-theme='dark'] .border-blue-200 {
+  border-color: var(--border-soft) !important;
 }
 
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
   opacity: 0.6;
+}
+
+/* Corrige la lisibilité des menus déroulants (évite blanc sur blanc). */
+select option {
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+[data-theme='dark'] select option {
+  color: #e5e7eb;
+  background-color: #1f2937;
 }

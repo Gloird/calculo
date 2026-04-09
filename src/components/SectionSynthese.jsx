@@ -100,7 +100,7 @@ export default function SectionSynthese({ resultats }) {
   } = resultats;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
+    <div className="card rounded-2xl shadow-sm overflow-hidden mb-8">
 
       {/* Header de section */}
       <div className="bg-gradient-to-r from-slate-900 to-blue-900 px-6 py-4 flex items-center gap-2">

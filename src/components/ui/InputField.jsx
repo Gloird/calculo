@@ -120,7 +120,7 @@ function AmortissementCalculator({ onApply, onClose }) {
 function CalculatorModal({ type, label, onApply, onClose }) {
   const modal = (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/45" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="w-full max-w-xl bg-white rounded-xl border border-blue-100 shadow-2xl p-4 sm:p-5" onClick={(e) => e.stopPropagation()}>
+      <div className="card w-full max-w-xl rounded-xl shadow-2xl p-4 sm:p-5" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-bold text-gray-800">Calculette: {label}</h3>
           <button type="button" className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100" onClick={onClose} aria-label="Fermer la calculette">x</button>

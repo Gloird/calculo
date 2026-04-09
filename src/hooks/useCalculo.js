@@ -78,6 +78,13 @@ const BASE_FORM = {
   indemnitesKmEmployeur: '',
   allocationsForfaitairesEmployeur: '',
   geoJustifications: [],
+  // ── Détail multi-lignes (tableau [{id, label, amount}]) ──────────────────────
+  chargesBureauItems: [],
+  chargesDoubleResidenceItems: [],
+  abonnementsBureauItems: [],
+  autresFraisItems: [],
+  prixMaterielItems: [],
+  prixEquipementBureauItems: [],
 };
 
 function ensureForm(form) {
@@ -193,6 +200,14 @@ export function useCalculo() {
   function handleChange(e) {
     const { id, value, type, checked } = e.target;
     patchForm({ ...form, [id]: type === 'checkbox' ? checked : value });
+  }
+
+  function handleItemsChange(fieldId, items, total) {
+    patchForm({
+      ...form,
+      [`${fieldId}Items`]: items,
+      [fieldId]: total > 0 ? String(total.toFixed(2)) : '',
+    });
   }
 
   function handleTransportLineChange(lineId, field, value) {
@@ -540,7 +555,18 @@ export function useCalculo() {
   }, [annee, members, vehicles, store]);
 
   function getPdfPayload(mode = 'personne') {
-    return mode === 'foyer' ? { ...resultats, foyerRows } : resultats;
+    const base = mode === 'foyer' ? { ...resultats, foyerRows } : resultats;
+    return {
+      ...base,
+      formDetails: {
+        chargesBureauItems: form.chargesBureauItems || [],
+        chargesDoubleResidenceItems: form.chargesDoubleResidenceItems || [],
+        abonnementsBureauItems: form.abonnementsBureauItems || [],
+        autresFraisItems: form.autresFraisItems || [],
+        prixMaterielItems: form.prixMaterielItems || [],
+        prixEquipementBureauItems: form.prixEquipementBureauItems || [],
+      },
+    };
   }
 
   return {
@@ -563,6 +589,7 @@ export function useCalculo() {
     resetAll,
     addTransportLine,
     removeTransportLine,
+    handleItemsChange,
     handleTransportLineChange,
     remplirDistancesDepuisAdresses,
     distanceLoading,

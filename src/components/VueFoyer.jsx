@@ -4,7 +4,7 @@ export default function VueFoyer({ foyerRows }) {
   const total = (foyerRows || []).reduce((s, r) => s + (r.gain || 0), 0);
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-8">
+    <div className="card rounded-2xl shadow-sm p-6 mb-8">
       <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Vue Foyer</h3>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">

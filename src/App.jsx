@@ -3,7 +3,7 @@
  * Composant racine : assemble toutes les sections de l'application.
  * Toute la logique d'état est déléguée au hook useCalculo.
  */
-import { useState }          from 'react';
+import { useEffect, useState } from 'react';
 import { useCalculo }        from './hooks/useCalculo.js';
 import { genererPDF }        from './lib/pdf.js';
 import Header                from './components/Header.jsx';
@@ -19,6 +19,7 @@ import VueFoyer              from './components/VueFoyer.jsx';
 
 export default function App() {
   const [pdfMode, setPdfMode] = useState('personne');
+  const [theme, setTheme] = useState(() => localStorage.getItem('calculo_theme') || 'contrast');
   const {
     form,
     annee,
@@ -39,6 +40,7 @@ export default function App() {
     resetAll,
     addTransportLine,
     removeTransportLine,
+    handleItemsChange,
     handleTransportLineChange,
     remplirDistancesDepuisAdresses,
     distanceLoading,
@@ -48,13 +50,20 @@ export default function App() {
 
   const selectedMember = members.find((m) => m.id === selectedMemberId);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('calculo_theme', theme);
+  }, [theme]);
+
   return (
-    <div className="bg-slate-50 min-h-screen text-gray-800 antialiased">
+    <div className="min-h-screen antialiased">
 
       <Header
         annee={annee}
         onAnneeChange={handleAnneeChange}
         onReset={resetAll}
+        theme={theme}
+        onThemeChange={setTheme}
       />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
@@ -103,7 +112,12 @@ export default function App() {
             annee={annee}
           />
           <CarteRepas     form={form} onChange={handleChange} />
-          <CarteBureau    form={form} onChange={handleChange} />
+          <CarteBureau
+            key={selectedMemberId || 'no-member'}
+            form={form}
+            onChange={handleChange}
+            onItemsChange={handleItemsChange}
+          />
         </div>
 
         <SectionSynthese resultats={resultats} />

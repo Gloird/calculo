@@ -10,7 +10,32 @@ import Dexie from 'dexie';
 const DB_NAME = 'calculo_db';
 const APP_STATE_ID = 'app-state';
 const LS_KEY = 'calculo_family_v1';
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
+
+function normalizeDetailedItemsInState(payload) {
+  const state = payload || {};
+  const formsByYearByMember = { ...(state.formsByYearByMember || {}) };
+
+  Object.keys(formsByYearByMember).forEach((year) => {
+    const byMember = { ...(formsByYearByMember[year] || {}) };
+    Object.keys(byMember).forEach((memberId) => {
+      const form = { ...(byMember[memberId] || {}) };
+      form.chargesBureauItems = Array.isArray(form.chargesBureauItems) ? form.chargesBureauItems : [];
+      form.chargesDoubleResidenceItems = Array.isArray(form.chargesDoubleResidenceItems) ? form.chargesDoubleResidenceItems : [];
+      form.abonnementsBureauItems = Array.isArray(form.abonnementsBureauItems) ? form.abonnementsBureauItems : [];
+      form.autresFraisItems = Array.isArray(form.autresFraisItems) ? form.autresFraisItems : [];
+      form.prixMaterielItems = Array.isArray(form.prixMaterielItems) ? form.prixMaterielItems : [];
+      form.prixEquipementBureauItems = Array.isArray(form.prixEquipementBureauItems) ? form.prixEquipementBureauItems : [];
+      byMember[memberId] = form;
+    });
+    formsByYearByMember[year] = byMember;
+  });
+
+  return {
+    ...state,
+    formsByYearByMember,
+  };
+}
 
 class CalculoDatabase extends Dexie {
   constructor() {
@@ -26,6 +51,17 @@ class CalculoDatabase extends Dexie {
       })
       .upgrade(async (tx) => {
         await tx.table('appState').toCollection().modify((row) => {
+          row.schemaVersion = SCHEMA_VERSION;
+        });
+      });
+
+    this.version(3)
+      .stores({
+        appState: 'id,updatedAt,schemaVersion',
+      })
+      .upgrade(async (tx) => {
+        await tx.table('appState').toCollection().modify((row) => {
+          row.payload = normalizeDetailedItemsInState(row.payload);
           row.schemaVersion = SCHEMA_VERSION;
         });
       });
@@ -46,12 +82,13 @@ export function defaultState() {
 
 function sanitizeState(state) {
   const parsed = state || {};
+  const normalized = normalizeDetailedItemsInState(parsed);
   return {
     ...defaultState(),
-    ...parsed,
+    ...normalized,
     members: Array.isArray(parsed.members) ? parsed.members : [],
     vehicles: Array.isArray(parsed.vehicles) ? parsed.vehicles : [],
-    formsByYearByMember: parsed.formsByYearByMember ?? {},
+    formsByYearByMember: normalized.formsByYearByMember ?? {},
   };
 }
 
