@@ -1,58 +1,62 @@
 # Calculo
 
-Application React de simulation des frais reels pour la declaration d'impot, avec gestion multi-profils, garage de vehicules, export PDF, et persistance locale versionnee via IndexedDB (Dexie).
+Application React de simulation des frais reels pour la declaration d'impot.
+Calculo permet de comparer rapidement l'abattement forfaitaire de 10% et l'option frais reels, avec une gestion multi-membres du foyer, un garage de vehicules partage, et un export PDF detaille.
 
 ## Objectif
 
-Calculo aide a comparer:
+Calculo est concu pour un usage pratique:
 
-- Abattement forfaitaire de 10%
-- Option frais reels
-
-Le projet est oriente usage pratique:
-
-- Saisie detaillee des depenses professionnelles
-- Calcul automatique de postes fiscaux courants
-- Vue foyer pour arbitrer au niveau menage
-- Export PDF justifiable
+- saisie structuree des depenses professionnelles
+- calcul fiscal automatique par poste
+- arbitrage au niveau du foyer
+- generation d'un recap PDF exploitable
 
 ## Fonctionnalites principales
 
-- Calculs fiscaux multi-postes:
-  - Transport (forfait km, frais reels, deux-roues)
-  - Repas
-  - Teletravail
-  - Double residence
-  - Bureau a domicile (quote-part)
-  - Materiel et amortissements
-  - Formation, juridique, cotisations, etc.
-- Gestion familiale:
-  - Plusieurs membres
-  - Selection du membre actif
-  - Vue agregat foyer
-- Garage de vehicules partage:
-  - Reutilisation des vehicules entre membres
-  - Verification avant suppression d'un vehicule utilise
-- Geolocalisation/adresses:
-  - Aide au calcul de distance domicile-travail
-- Aides UX:
-  - Tooltips explicatifs
-  - Calculatrices integrees (annuel 12 mois, annuel precis, km, amortissement)
-- Export PDF:
-  - Version personne
-  - Version foyer
-  - Details et traces de justification
-- Persistance locale versionnee:
-  - Dexie + IndexedDB
-  - Migration automatique de l'ancien localStorage
+### Calculs fiscaux
+
+- transport multi-lignes (bareme km auto/deux-roues, frais reels, transports alternatifs)
+- repas professionnels
+- teletravail
+- double residence
+- bureau a domicile (quote-part)
+- equipement et amortissements
+- autres postes: formation, recherche emploi, cotisations, defense juridique, sante, handicap, missions, banque, vetements, etc.
+
+### Gestion familiale
+
+- plusieurs membres du foyer
+- selection du membre actif
+- vue de synthese foyer
+- correspondance des cases indicatives de declaration (1AK, 1BK, ...)
+
+### Vehicules et distances
+
+- garage de vehicules partage entre membres
+- blocage de suppression d'un vehicule deja reference dans un calcul
+- aide geographique pour remplir les distances domicile-travail
+
+### Export PDF
+
+- mode personne
+- mode foyer
+- detail des postes
+- blocs de justification (calcul, contexte, source)
+
+### Persistance locale
+
+- stockage local versionne via IndexedDB (Dexie)
+- migration automatique depuis l'ancien localStorage
+- aucune donnee envoyee a un serveur
 
 ## Stack technique
 
-- Frontend: React 18 + Vite
-- UI: Tailwind CSS
-- Tests: Vitest
-- PDF: jsPDF + jspdf-autotable
-- Persistance: Dexie (IndexedDB)
+- React 18 + Vite 5
+- Tailwind CSS
+- Vitest
+- Dexie (IndexedDB)
+- jsPDF + jspdf-autotable
 
 ## Prerequis
 
@@ -61,188 +65,168 @@ Le projet est oriente usage pratique:
 
 ## Installation
 
-1. Cloner le projet
-2. Installer les dependances
-
 ```bash
 npm install
 ```
 
-## Lancement
-
-### Developpement
+## Commandes utiles
 
 ```bash
 npm run dev
 ```
 
-### Build production
+Lance l'application en developpement.
 
 ```bash
 npm run build
 ```
 
-### Preview build
+Genere le build de production.
 
 ```bash
 npm run preview
 ```
 
-### Tests
+Sert localement le build produit.
 
 ```bash
 npm run test
 ```
 
-ou en mode execution unique:
+Lance Vitest en mode watch.
 
 ```bash
 npm run test:run
 ```
 
-## Scripts npm
-
-- dev: demarre Vite en local
-- build: build production
-- preview: sert le build localement
-- test: lance Vitest
-- test:run: execute les tests une seule fois
+Execute les tests une seule fois.
 
 ## Structure du projet
 
 ```text
-src/
-  App.jsx
-  main.jsx
-  index.css
-  config/
-    fiscale.js
-  hooks/
-    useCalculo.js
-  lib/
-    calculs.js
-    calculs.test.js
-    geo.js
-    pdf.js
-    storage.js
-  components/
-    Header.jsx
-    Footer.jsx
-    DashboardFamille.jsx
-    CarteRevenus.jsx
-    CarteTransport.jsx
-    CarteRepas.jsx
-    CarteBureau.jsx
-    SectionSynthese.jsx
-    VueFoyer.jsx
-    ui/
-      Card.jsx
-      InputField.jsx
+.
+  index.html
+  package.json
+  src/
+    App.jsx
+    main.jsx
+    index.css
+    components/
+      AlerteDistance.jsx
+      CarteBureau.jsx
+      CarteRepas.jsx
+      CarteRevenus.jsx
+      CarteTransport.jsx
+      DashboardFamille.jsx
+      Footer.jsx
+      Header.jsx
+      SectionSynthese.jsx
+      VueFoyer.jsx
+      ui/
+        Card.jsx
+        DetailedExpenseModal.jsx
+        InputField.jsx
+    config/
+      fiscale.js
+    data/
+      barems.json
+    hooks/
+      useCalculo.js
+    lib/
+      calculs.js
+      geo.js
+      pdf.js
+      storage.js
+    logic/
+      fiscalEngine.js
 ```
 
-## Persistance et gestion de versions
+## Persistance et versionnement
 
-La persistance est geree dans src/lib/storage.js via Dexie.
+La persistance est geree dans src/lib/storage.js.
 
-- Base IndexedDB: calculo_db
-- Table: appState
-- Enregistrement unique: id = app-state
-- Version de schema actuelle: 2
+- base IndexedDB: calculo_db
+- table: appState
+- enregistrement unique: id = app-state
+- version de schema actuelle: 3
 
 Comportement:
 
-- Au demarrage, l'app lit l'etat depuis IndexedDB
-- Si vide, elle tente une migration depuis localStorage (ancienne cle calculo_family_v1)
-- Toute modification est resauvegardee en local
-
-Aucune donnee n'est envoyee a un serveur.
+- lecture au demarrage depuis IndexedDB
+- migration depuis localStorage (cle legacy: calculo_family_v1) si besoin
+- sauvegarde automatique a chaque mise a jour d'etat
 
 ## Donnees fiscales
 
-Les parametres fiscaux sont centralises dans src/config/fiscale.js.
+Les regles et constantes fiscales principales sont dans src/config/fiscale.js, et les baremes detaillees dans src/data/barems.json.
 
-Points importants:
+Version actuellement supportee dans le code:
 
-- Support des annees de revenus 2024 et 2025
-- Parametres repas, abattement, teletravail, baremes km, majoration electrique
-- Valeurs documentees et sourcees dans le fichier
-
-## Workflow d'utilisation recommande
-
-1. Configurer les membres du foyer
-2. Configurer le garage de vehicules
-3. Choisir le membre actif
-4. Remplir les cartes de saisie (revenus, transport, repas, bureau/autres)
-5. Verifier la synthese
-6. Comparer en vue foyer
-7. Exporter en PDF (mode personne ou foyer)
+- revenus 2024 (declaration 2025)
+- revenus 2025 (declaration 2026)
 
 ## Qualite et tests
 
-Le projet inclut des tests unitaires dans src/lib/calculs.test.js couvrant les principaux scenarios de calcul.
+Le projet inclut des tests unitaires sur les zones critiques:
 
-Bonnes pratiques recommandees:
+- composants React (cartes, alertes)
+- hook metier principal (useCalculo)
+- moteur fiscal (logic/fiscalEngine)
+- bibliotheques utilitaires (calculs, stockage, PDF, config fiscale)
 
-- Ajouter un test a chaque evolution de regle fiscale
-- Verifier build + tests avant merge
+Commande recommandee avant livraison:
 
-## Accessibilite UX
+```bash
+npm run test:run
+npm run build
+```
 
-Les champs supportent:
+## Workflow utilisateur recommande
 
-- Bouton aide
-- Bouton calculette
-- Remplissage automatique apres calcul
-
-Objectif: reduire les erreurs de saisie et rendre la simulation plus pedagogique.
+1. Creer les membres du foyer
+2. Configurer les vehicules
+3. Selectionner le membre a traiter
+4. Completer les cartes de saisie (revenus, transport, repas, bureau, autres)
+5. Verifier la synthese et la recommandation
+6. Controler la vue foyer
+7. Exporter le PDF (personne ou foyer)
 
 ## Confidentialite
 
-- Donnees stockees uniquement en local (navigateur)
-- Pas de backend
-- Pas de transmission reseau des donnees personnelles de saisie
+- donnees stockees localement dans le navigateur
+- pas de backend
+- pas de transmission de donnees personnelles
 
-## Limites connues
+## Limites
 
-- Outil d'aide a la simulation: ne remplace pas un conseil fiscal personnalise
-- Certaines interpretations peuvent dependre du contexte exact du contribuable
-- Toujours verifier les regles officielles en vigueur a la date de declaration
+- outil d'aide a la simulation, non substitut a un conseil fiscal personnalise
+- certains cas peuvent dependre de situations individuelles specifiques
+- toujours verifier les sources officielles au moment de la declaration
 
-## Depannage
+## Depannage rapide
 
-### npm run dev echoue
+### Le mode dev ne demarre pas
 
-Verifier:
-
-- Version Node/npm
-- Installation complete des dependances
-- Port local disponible
-
-Relancer:
+- verifier la version de Node/npm
+- reinstaller les dependances
 
 ```bash
 npm install
 npm run dev
 ```
 
-### Donnees incoherentes en local
+### Donnees locales incoherentes
 
-- Utiliser la reinitialisation depuis l'interface
-- Ou vider le stockage du site dans les outils navigateur
+- utiliser la reinitialisation dans l'interface
+- ou vider le stockage du site dans le navigateur
 
-### Build avec warning de chunk trop gros
+### Warning de taille de chunk au build
 
-Ce warning n'est pas bloquant. Optimisations possibles:
+Ce warning n'est pas bloquant. Pistes d'amelioration:
 
-- Decoupage dynamique des modules
-- Configuration manuelle des chunks dans Vite
-
-## Evolution recommandee
-
-- Ajouter tests UI (Playwright ou equivalent)
-- Versionner davantage les migrations Dexie (v3, v4...)
-- Ajouter ecran de changelog fiscal par annee
+- decoupage dynamique de modules
+- reglages de chunks manuels dans Vite
 
 ## Avertissement legal
 
-Calculo est fourni a titre informatif et d'aide a la preparation. L'utilisateur reste responsable de sa declaration.
+Calculo est fourni a titre informatif. L'utilisateur reste responsable de sa declaration fiscale.
