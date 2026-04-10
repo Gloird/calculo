@@ -11,10 +11,14 @@ function AnnualCalculator({ onApply, onClose }) {
   const [mode, setMode] = useState('12m');
   const [monthly, setMonthly] = useState('');
   const [months, setMonths] = useState(Array(12).fill(''));
+  const [globalAmount, setGlobalAmount] = useState('');
+  const [percent, setPercent] = useState('');
 
   const total = mode === '12m'
     ? Number(monthly || 0) * 12
-    : months.reduce((sum, m) => sum + Number(m || 0), 0);
+    : mode === 'precis'
+      ? months.reduce((sum, m) => sum + Number(m || 0), 0)
+      : Number(globalAmount || 0) * (Number(percent || 0) / 100);
 
   return (
     <div className="space-y-3">
@@ -25,6 +29,9 @@ function AnnualCalculator({ onApply, onClose }) {
         <button type="button" className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${mode === 'precis' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700'}`} onClick={() => setMode('precis')}>
           Mode precis
         </button>
+        <button type="button" className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${mode === 'prorata' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700'}`} onClick={() => setMode('prorata')}>
+          Ventilation %
+        </button>
       </div>
 
       {mode === '12m' ? (
@@ -32,7 +39,7 @@ function AnnualCalculator({ onApply, onClose }) {
           <p className="text-xs text-gray-600 mb-1">Saisissez un montant mensuel unique.</p>
           <input className="inp" type="number" min="0" step="0.01" placeholder="Ex: 78" value={monthly} onChange={(e) => setMonthly(e.target.value)} />
         </div>
-      ) : (
+      ) : mode === 'precis' ? (
         <div>
           <p className="text-xs text-gray-600 mb-2">Saisissez vos 12 montants reels mois par mois.</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -52,6 +59,14 @@ function AnnualCalculator({ onApply, onClose }) {
                 }}
               />
             ))}
+          </div>
+        </div>
+      ) : (
+        <div>
+          <p className="text-xs text-gray-600 mb-2">Ventilez une facture globale selon un pourcentage (ex: usage professionnel).</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input className="inp" type="number" min="0" step="0.01" placeholder="Montant global" value={globalAmount} onChange={(e) => setGlobalAmount(e.target.value)} />
+            <input className="inp" type="number" min="0" max="100" step="0.1" placeholder="Pourcentage (%)" value={percent} onChange={(e) => setPercent(e.target.value)} />
           </div>
         </div>
       )}
@@ -180,7 +195,7 @@ export default function InputField({ id, label, hint, helpText, calculator = nul
               aria-label={`Ouvrir la calculette pour ${label}`}
               onClick={() => setCalcOpen(true)}
             >
-              ⌨️
+              🧮
             </button>
           )}
         </div>

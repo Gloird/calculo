@@ -83,7 +83,7 @@ export default function CarteBureau({ form, onChange, onItemsChange }) {
             <InputField id="surfaceBureau" label="Surface bureau (m2)" type="number" min="0" step="0.5" value={form.surfaceBureau} onChange={onChange} />
             <InputField id="surfaceTotale" label="Surface totale logement (m2)" type="number" min="0" step="0.5" value={form.surfaceTotale} onChange={onChange} />
             <InputField id="loyerAnnuelBureau" label="Loyer annuel (EUR)" calculator={{ type: 'annual' }} type="number" min="0" step="10" value={form.loyerAnnuelBureau} onChange={onChange} />
-            <InputField id="amortissementProprietaireBureau" label="Amortissement proprietaire (EUR)" calculator={{ type: 'amortissement' }} type="number" min="0" step="10" value={form.amortissementProprietaireBureau} onChange={onChange} />
+            <InputField id="amortissementProprietaireBureau" label="Amortissement proprietaire (EUR)" hint="Formule: (Valeur bien x quote-part surface bureau) / duree fiscale d'amortissement" calculator={{ type: 'amortissement' }} type="number" min="0" step="10" value={form.amortissementProprietaireBureau} onChange={onChange} />
             <DetailedField id="chargesBureau" label="Charges annuelles (EUR)" hint="EDF, eau, gaz, assurance..." calculator={{ type: 'annual' }} type="number" min="0" step="10" items={items('chargesBureau')} onItemsChange={onItemsChange} form={form} onChange={onChange} modalHelp="Saisissez chaque facture en ligne separee." />
             <InputField id="taxeFonciereBureau" label="Taxe fonciere (EUR)" calculator={{ type: 'annual' }} type="number" min="0" step="10" value={form.taxeFonciereBureau} onChange={onChange} />
             <InputField id="assuranceBureau" label="Assurance multirisque (EUR)" calculator={{ type: 'annual' }} type="number" min="0" step="10" value={form.assuranceBureau} onChange={onChange} />
@@ -125,7 +125,7 @@ export default function CarteBureau({ form, onChange, onItemsChange }) {
 
       <Card icon="🩺" iconBg="bg-rose-50 border border-rose-100" title="Sante & Specifique" subtitle="Sante, missions et frais specifiques">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <InputField id="resteSanteProthesesVue" label="Reste a charge sante (EUR)" type="number" min="0" step="10" value={form.resteSanteProthesesVue} onChange={onChange} />
+          <InputField id="resteSanteProthesesVue" label="Reste a charge sante (EUR)" hint="Uniquement le reste a charge indispensable au travail (non rembourse)." type="number" min="0" step="10" value={form.resteSanteProthesesVue} onChange={onChange} />
           <InputField id="adaptationPosteHandicap" label="Adaptation poste handicap (EUR)" type="number" min="0" step="10" value={form.adaptationPosteHandicap} onChange={onChange} />
           <InputField id="visasPasseportsVaccins" label="Visas/passeports/vaccins (EUR)" type="number" min="0" step="10" value={form.visasPasseportsVaccins} onChange={onChange} />
           <InputField id="blanchissageHotel" label="Blanchissage hotel en mission (EUR)" type="number" min="0" step="10" value={form.blanchissageHotel} onChange={onChange} />

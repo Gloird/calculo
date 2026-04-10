@@ -33,7 +33,7 @@ export default function CarteRepas({ form, onChange }) {
         <InputField
           id="prixRepas"
           label="Prix moyen du repas payé (€)"
-          helpText="Deduisez la part depassant 5,45 EUR par repas (plafond 2025). Ex: Si repas a 10 EUR, deduisez 4,55 EUR."
+          helpText="Deduction repas: moins 5,45 EUR (valeur domicile), dans la limite de 21,10 EUR par repas."
           hint="Exemple: repas a 10 EUR -> base deductible theorique 4,55 EUR avant ticket-restaurant."
           type="number"
           min="0"

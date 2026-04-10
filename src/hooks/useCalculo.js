@@ -18,7 +18,7 @@ import {
 import { effacerState, restaurerState, sauvegarderState } from '../lib/storage.js';
 import { calculerDistanceAutomatique, normalizeAddress } from '../lib/geo.js';
 
-const makeLine = () => ({ id: crypto.randomUUID(), mode: 'forfait', vehicleId: '', kmAller: '', jours: '', carburant: '', entretien: '', reparations: '', assurance: '', pneus: '', loaLld: '', usageProPercent: '100', amortissementAchat: '', plafondCO2: '', interetsEmprunt: '', parkingBox: '', peages: '' });
+const makeLine = () => ({ id: crypto.randomUUID(), mode: 'forfait', vehicleId: '', kmAller: '', jours: '', justificationEloignement: false, carburant: '', entretien: '', reparations: '', assurance: '', pneus: '', loaLld: '', usageProPercent: '100', amortissementAchat: '', plafondCO2: '', interetsEmprunt: '', parkingBox: '', peages: '' });
 
 function caseDeclarationPourIndex(index) {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -110,6 +110,16 @@ function normalizeWorkplaces(workplaces) {
     }));
 }
 
+export function appliquerDepensesDetaillees(form, fieldId, items) {
+  const lignes = Array.isArray(items) ? items : [];
+  const total = lignes.reduce((sum, item) => sum + Number(item?.amount || 0), 0);
+  return {
+    ...form,
+    [`${fieldId}Items`]: lignes,
+    [fieldId]: total > 0 ? String(rond(total).toFixed(2)) : '',
+  };
+}
+
 function normalizeStore(restored) {
   if (restored.members.length === 0) {
     const member = {
@@ -139,6 +149,23 @@ function normalizeStore(restored) {
     ...restored,
     members: normalizedMembers,
     selectedMemberId: restored.selectedMemberId || normalizedMembers[0].id,
+  };
+}
+
+export function supprimerMembreDuStore(prev, memberId) {
+  const nextMembers = prev.members.filter((m) => m.id !== memberId);
+  const formsByYearByMember = { ...(prev.formsByYearByMember || {}) };
+  Object.keys(formsByYearByMember).forEach((y) => {
+    const perMember = { ...(formsByYearByMember[y] || {}) };
+    delete perMember[memberId];
+    formsByYearByMember[y] = perMember;
+  });
+
+  return {
+    ...prev,
+    members: nextMembers,
+    selectedMemberId: prev.selectedMemberId === memberId ? nextMembers[0]?.id || null : prev.selectedMemberId,
+    formsByYearByMember,
   };
 }
 
@@ -202,12 +229,8 @@ export function useCalculo() {
     patchForm({ ...form, [id]: type === 'checkbox' ? checked : value });
   }
 
-  function handleItemsChange(fieldId, items, total) {
-    patchForm({
-      ...form,
-      [`${fieldId}Items`]: items,
-      [fieldId]: total > 0 ? String(total.toFixed(2)) : '',
-    });
+  function handleItemsChange(fieldId, items) {
+    patchForm(appliquerDepensesDetaillees(form, fieldId, items));
   }
 
   function handleTransportLineChange(lineId, field, value) {
@@ -256,21 +279,7 @@ export function useCalculo() {
 
   function deleteMember(memberId) {
     if (members.length <= 1) return;
-    setStore((prev) => {
-      const nextMembers = prev.members.filter((m) => m.id !== memberId);
-      const formsByYearByMember = { ...(prev.formsByYearByMember || {}) };
-      Object.keys(formsByYearByMember).forEach((y) => {
-        const perMember = { ...(formsByYearByMember[y] || {}) };
-        delete perMember[memberId];
-        formsByYearByMember[y] = perMember;
-      });
-      return {
-        ...prev,
-        members: nextMembers,
-        selectedMemberId: prev.selectedMemberId === memberId ? nextMembers[0]?.id || null : prev.selectedMemberId,
-        formsByYearByMember,
-      };
-    });
+    setStore((prev) => supprimerMembreDuStore(prev, memberId));
   }
 
   function selectMember(memberId) {

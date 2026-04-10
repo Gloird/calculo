@@ -1,0 +1,362 @@
+{
+    "vehicules_thermiques_a_hydrogene_ou_hybrides_automobile_3_cv_et_moins": [
+        {
+            "coef_1": "0.529",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.316",
+            "coef_2": "1065",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.37",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_thermiques_a_hydrogene_ou_hybrides_automobile_4_cv": [
+        {
+            "coef_1": "0.606",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.34",
+            "coef_2": "1330",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.407",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_thermiques_a_hydrogene_ou_hybrides_automobile_5_cv": [
+        {
+            "coef_1": "0.636",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.357",
+            "coef_2": "1395",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.427",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_thermiques_a_hydrogene_ou_hybrides_automobile_6_cv": [
+        {
+            "coef_1": "0.665",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.374",
+            "coef_2": "1457",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.447",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_thermiques_a_hydrogene_ou_hybrides_automobile_7_cv_et_plus": [
+        {
+            "coef_1": "0.697",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.394",
+            "coef_2": "1515",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.47",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_thermiques_a_hydrogene_ou_hybrides_deux_roues_plus_50cm3_1_ou_2_cv": [
+        {
+            "coef_1": "0.395",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "3000"
+        },
+        {
+            "coef_1": "0.099",
+            "coef_2": "891",
+            "plage_debut": "3001",
+            "plage_fin": "6000"
+        },
+        {
+            "coef_1": "0.248",
+            "coef_2": "0",
+            "plage_debut": "6001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_thermiques_a_hydrogene_ou_hybrides_deux_roues_plus_50cm3_3_a_5_cv": [
+        {
+            "coef_1": "0.468",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "3000"
+        },
+        {
+            "coef_1": "0.082",
+            "coef_2": "1158",
+            "plage_debut": "3001",
+            "plage_fin": "6000"
+        },
+        {
+            "coef_1": "0.275",
+            "coef_2": "0",
+            "plage_debut": "6001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_thermiques_a_hydrogene_ou_hybrides_deux_roues_plus_50cm3_plus_de_5_cv": [
+        {
+            "coef_1": "0.606",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "3000"
+        },
+        {
+            "coef_1": "0.079",
+            "coef_2": "1583",
+            "plage_debut": "3001",
+            "plage_fin": "6000"
+        },
+        {
+            "coef_1": "0.343",
+            "coef_2": "0",
+            "plage_debut": "6001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_thermiques_a_hydrogene_ou_hybrides_deux_roues_moins_50cm3": [
+        {
+            "coef_1": "0.315",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "3000"
+        },
+        {
+            "coef_1": "0.079",
+            "coef_2": "711",
+            "plage_debut": "3001",
+            "plage_fin": "6000"
+        },
+        {
+            "coef_1": "0.198",
+            "coef_2": "0",
+            "plage_debut": "6001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_electriques_automobile_3_cv_et_moins": [
+        {
+            "coef_1": "0.635",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.379",
+            "coef_2": "1278",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.444",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_electriques_automobile_4_cv": [
+        {
+            "coef_1": "0.727",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.408",
+            "coef_2": "1596",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.488",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_electriques_automobile_5_cv": [
+        {
+            "coef_1": "0.763",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.428",
+            "coef_2": "1674",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.512",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_electriques_automobile_6_cv": [
+        {
+            "coef_1": "0.798",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.449",
+            "coef_2": "1748",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.536",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_electriques_automobile_7_cv_et_plus": [
+        {
+            "coef_1": "0.836",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "5000"
+        },
+        {
+            "coef_1": "0.473",
+            "coef_2": "1818",
+            "plage_debut": "5001",
+            "plage_fin": "20000"
+        },
+        {
+            "coef_1": "0.564",
+            "coef_2": "0",
+            "plage_debut": "20001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_electriques_motocyclette_plus_4_kw__1_ou_2_cv": [
+        {
+            "coef_1": "0.474",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "3000"
+        },
+        {
+            "coef_1": "0.119",
+            "coef_2": "1069",
+            "plage_debut": "3001",
+            "plage_fin": "6000"
+        },
+        {
+            "coef_1": "0.298",
+            "coef_2": "0",
+            "plage_debut": "6001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_electriques_motocyclette_plus_4_kw__3_a_5_cv": [
+        {
+            "coef_1": "0.562",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "3000"
+        },
+        {
+            "coef_1": "0.098",
+            "coef_2": "1390",
+            "plage_debut": "3001",
+            "plage_fin": "6000"
+        },
+        {
+            "coef_1": "0.33",
+            "coef_2": "0",
+            "plage_debut": "6001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_electriques_motocyclette_plus_4_kw__plus_de_5_cv": [
+        {
+            "coef_1": "0.727",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "3000"
+        },
+        {
+            "coef_1": "0.095",
+            "coef_2": "1900",
+            "plage_debut": "3001",
+            "plage_fin": "6000"
+        },
+        {
+            "coef_1": "0.412",
+            "coef_2": "0",
+            "plage_debut": "6001",
+            "plage_fin": null
+        }
+    ],
+    "vehicules_electriques_cyclomoteur___4_kw_": [
+        {
+            "coef_1": "0.378",
+            "coef_2": "0",
+            "plage_debut": "0",
+            "plage_fin": "3000"
+        },
+        {
+            "coef_1": "0.095",
+            "coef_2": "853",
+            "plage_debut": "3001",
+            "plage_fin": "6000"
+        },
+        {
+            "coef_1": "0.238",
+            "coef_2": "0",
+            "plage_debut": "6001",
+            "plage_fin": null
+        }
+    ]
+}

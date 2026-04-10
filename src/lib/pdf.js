@@ -370,6 +370,13 @@ export function genererPDF(resultats, mode = 'personne', membreNom = 'Membre') {
   y += 4;
   if (y > 258) { doc.addPage(); y = 20; }
 
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(8);
+  doc.setTextColor(...C_GREY);
+  doc.text('Calcul conforme au BOI-RSA-BASE-30-50 et aux baremes Service-Public 2024/2025.', mX, y);
+  y += 8;
+  if (y > 258) { doc.addPage(); y = 20; }
+
   // ═══ 4. Avertissement en rouge ═══════════════════════════════════════════════
   doc.setFillColor(254, 242, 242);
   doc.setDrawColor(...C_RED);

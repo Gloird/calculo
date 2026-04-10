@@ -5,6 +5,8 @@
  *   { montant: number, detail: string }
  */
 
+import { calculBaremeAutomobile, calculBaremeDeuxRoues } from '../logic/fiscalEngine.js';
+
 // ─── Utilitaires ─────────────────────────────────────────────────────────────
 
 /** Formatte un montant en euros avec la locale fr-FR (ex : 1 234,56 €) */
@@ -47,26 +49,14 @@ export function calculerKM(cfg, km, cv, jours, elec) {
   // Étape 1 – Distance totale annuelle (aller-retour)
   const dTotal = km * 2 * jours;
 
-  // Étape 2 – Recherche de la tranche applicable
-  const tranches = cfg.bareme_km[cv];
-  let montantBase = 0;
-  let numTranche = 1;
-  for (let i = 0; i < tranches.length; i++) {
-    if (dTotal <= tranches[i].max) {
-      montantBase = tranches[i].calc(dTotal);
-      numTranche = i + 1;
-      break;
-    }
-  }
-
-  // Étape 3 – Majoration pour véhicule électrique
-  const montantFinal = elec ? montantBase * (1 + cfg.majorationElectrique) : montantBase;
-  const coefficientElec = (1 + cfg.majorationElectrique).toFixed(2).replace('.', ',');
-  const majStr = elec ? ` × ${coefficientElec} (élec. +${cfg.majorationElectrique * 100}%)` : '';
+  // Étape 2 – Recherche de la tranche via les coefficients JSON officiels
+  const kmResult = calculBaremeAutomobile(dTotal, cv, elec);
+  const montantFinal = kmResult.montant;
+  const numTranche = kmResult.trancheIndex || 1;
 
   const detail =
     `${km} km × 2 × ${jours} j = ${dTotal} km/an` +
-    ` · ${cv}CV · Tranche ${numTranche}${majStr}`;
+    ` · ${cv}CV · Tranche ${numTranche}`;
 
   return { montant: rond(montantFinal), detail };
 }
@@ -101,23 +91,11 @@ export function calculerKMDeuxRoues(cfg, km, jours, categorie, motoCv, electriqu
   }
 
   const distanceTotale = km * 2 * jours;
-  let tranches;
-  let libelle;
-
-  if (categorie === 'cyclo_moins_50') {
-    tranches = cfg.bareme_2r.cyclo_moins_50;
-    libelle = 'Cyclomoteur ≤ 50 cm3';
-  } else {
-    const cv = Math.min(Math.max(parseInt(motoCv || 5, 10), 1), 5);
-    tranches = cfg.bareme_2r.moto_plus_50[cv];
-    libelle = `Moto > 50 cm3 (${cv} CV${cv === 5 ? ' et +' : ''})`;
-  }
-
-  const { montantBase, numTranche } = appliquerBaremeParTranches(tranches, distanceTotale);
-  const montantFinal = electrique ? montantBase * (1 + cfg.majorationElectrique) : montantBase;
-  const coef = (1 + cfg.majorationElectrique).toFixed(2).replace('.', ',');
-  const majStr = electrique ? ` × ${coef} (élec. +${cfg.majorationElectrique * 100}%)` : '';
-  const detail = `${km} km × 2 × ${jours} j = ${distanceTotale} km/an · ${libelle} · Tranche ${numTranche}${majStr}`;
+  const libelle = categorie === 'cyclo_moins_50' ? 'Cyclomoteur ≤ 50 cm3' : `Moto > 50 cm3 (${Number(motoCv || 5)} CV)`;
+  const kmResult = calculBaremeDeuxRoues(distanceTotale, categorie, motoCv, electrique);
+  const montantFinal = kmResult.montant;
+  const numTranche = kmResult.trancheIndex || 1;
+  const detail = `${km} km × 2 × ${jours} j = ${distanceTotale} km/an · ${libelle} · Tranche ${numTranche}`;
 
   return { montant: rond(montantFinal), detail };
 }
@@ -380,10 +358,28 @@ export function calculerKMMultiVehiculesForfait(cfg, lignes, vehicules) {
     return { montant: 0, detail: 'Aucune ligne transport renseignée' };
   }
 
+  const distanceMaxAller = Number(cfg?.distanceMaxAllerKm || 40);
+
+  function appliquerPlafondDistanceAller(kmAller, justificationEloignement) {
+    const km = Number(kmAller || 0);
+    if (!km) return km;
+    if (justificationEloignement) return km;
+    return Math.min(km, distanceMaxAller);
+  }
+
+  function isVehiculeElectrique(veh) {
+    if (!veh) return false;
+    if (typeof veh.electrique === 'boolean') return veh.electrique;
+    return String(veh.type_energie || '').toLowerCase() === 'electrique';
+  }
+
   const vehiclesMap = new Map((vehicules || []).map((v) => [v.id, v]));
   const lignesValides = lignes
     .map((l) => {
-      const kmAller = Number(l.kmAller || 0);
+      const kmAller = appliquerPlafondDistanceAller(
+        Number(l.kmAller || 0),
+        Boolean(l.justificationEloignement)
+      );
       const jours = Number(l.jours || 0);
       const veh = vehiclesMap.get(l.vehicleId);
       if (!veh || !kmAller || !jours) return null;
@@ -412,7 +408,7 @@ export function calculerKMMultiVehiculesForfait(cfg, lignes, vehicules) {
         distanceTotale / 2,
         Number(ligne.veh.puissance || 4),
         1,
-        Boolean(ligne.veh.electrique)
+        isVehiculeElectrique(ligne.veh)
       );
     } else {
       calcVehicule = calculerKMDeuxRoues(
@@ -421,7 +417,7 @@ export function calculerKMMultiVehiculesForfait(cfg, lignes, vehicules) {
         1,
         ligne.veh.type,
         Number(ligne.veh.puissance || 5),
-        Boolean(ligne.veh.electrique)
+        isVehiculeElectrique(ligne.veh)
       );
     }
 

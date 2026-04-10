@@ -50,7 +50,8 @@ function TransportLine({ line, vehicles, onChange, onRemove, canRemove }) {
       </div>
 
       {(line.mode || 'forfait') === 'forfait' ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor={`km_${line.id}`} className="lbl">Distance aller (km)</label>
             <input
@@ -76,6 +77,19 @@ function TransportLine({ line, vehicles, onChange, onRemove, canRemove }) {
               onChange={(e) => onChange(line.id, 'jours', e.target.value)}
             />
           </div>
+          </div>
+
+          <label className="flex items-start gap-2 text-xs text-gray-600">
+            <input
+              type="checkbox"
+              checked={Boolean(line.justificationEloignement)}
+              onChange={(e) => onChange(line.id, 'justificationEloignement', e.target.checked)}
+            />
+            <span>
+              Justification d'éloignement spécifique (mutation, emploi du conjoint, etc.).
+              Sans cette case, la distance déductible est plafonnée à 40 km aller (80 km AR).
+            </span>
+          </label>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

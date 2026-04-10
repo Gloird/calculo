@@ -14,6 +14,7 @@ export default function VueFoyer({ foyerRows }) {
               <th className="py-2 pr-3">Membre</th>
               <th className="py-2 pr-3">Frais réels</th>
               <th className="py-2 pr-3">Abattement 10%</th>
+              <th className="py-2 pr-3">Option gagnante</th>
               <th className="py-2 pr-3">Gain</th>
             </tr>
           </thead>
@@ -24,6 +25,7 @@ export default function VueFoyer({ foyerRows }) {
                 <td className="py-2 pr-3 font-medium text-gray-700">{r.prenom}</td>
                 <td className="py-2 pr-3">{eur(r.total)}</td>
                 <td className="py-2 pr-3">{eur(r.abattement)}</td>
+                <td className="py-2 pr-3 text-xs font-semibold text-gray-700">{r.total >= r.abattement ? 'Frais réels' : 'Abattement 10%'}</td>
                 <td className="py-2 pr-3 font-semibold text-emerald-700">{eur(r.gain)}</td>
               </tr>
             ))}

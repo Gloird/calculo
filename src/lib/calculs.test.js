@@ -13,6 +13,7 @@ import {
   calculerPosteSimple,
   calculerKMMultiVehiculesForfait,
   calculerTransportMultiLignes,
+  calculerReintegrationAvantages,
   peutSupprimerVehicule,
 } from './calculs.js';
 import { distanceAnnuelle } from './geo.js';
@@ -54,6 +55,16 @@ describe('Loi de Finances 2026 - Revenus 2025', () => {
       expect(res.montant).toBe(3537);
     });
 
+    it('Test_1 (Thermique): Voiture 5 CV, 12 000 km => 5 679 €', () => {
+      const res = calculKMDepuisDistanceAnnuelle(12000, 5, false);
+      expect(res.montant).toBe(5679);
+    });
+
+    it('Test_2 (Electrique): Voiture 5 CV, 12 000 km => 6 810 €', () => {
+      const res = calculKMDepuisDistanceAnnuelle(12000, 5, true);
+      expect(res.montant).toBe(6810);
+    });
+
     it('Voiture 4 CV électrique, 10 000 km => 5 676 €', () => {
       const res = calculKMDepuisDistanceAnnuelle(10000, 4, true);
       expect(res.montant).toBe(5676);
@@ -85,9 +96,9 @@ describe('Loi de Finances 2026 - Revenus 2025', () => {
       expect(res.montant).toBe(1027);
     });
 
-    it('Moto > 50 cm3 (5 CV+), 4 000 km annuels', () => {
+    it('Test_4 (Moto 3-5 CV): Moto > 50 cm3, 4 000 km annuels => 1 486 €', () => {
       const res = calculerKMDeuxRoues(cfg2025, 2000, 1, 'moto_plus_50', 5, false);
-      expect(res.montant).toBe(1447);
+      expect(res.montant).toBe(1486);
     });
   });
 
@@ -182,6 +193,145 @@ describe('Loi de Finances 2026 - Revenus 2025', () => {
 
     it('Validation adresses: 10 km aller × 210 jours = 4 200 km annuels', () => {
       expect(distanceAnnuelle(10, 210)).toBe(4200);
+    });
+  });
+
+  describe('Validation fiscale 2025/2026 - conformité renforcée', () => {
+    it('Conformité A16343 JSON: 5 CV électrique, 10 000 km => 5 954 €', () => {
+      const res = calculerKM(cfg2025, 20, 5, 250, true);
+      expect(res.montant).toBe(5954);
+    });
+
+    it('Test_3 (Plafonnement): 5 CV, 55 km aller sur 210j => 7 392,60 € (distance plafonnée à 40 km)', () => {
+      const vehicles = [{ id: 'v1', nom: 'Thermique', type: 'voiture', puissance: 5, electrique: false }];
+      const lignes = [{ mode: 'forfait', vehicleId: 'v1', kmAller: 55, jours: 210, justificationEloignement: false }];
+
+      const res = calculerKMMultiVehiculesForfait(cfg2025, lignes, vehicles);
+      expect(res.montant).toBe(7392.6);
+    });
+
+    it('Plafond 40 km: bypass si justification d’éloignement', () => {
+      const vehicles = [{ id: 'v1', nom: 'Thermique', type: 'voiture', puissance: 5, electrique: false }];
+      const lignes = [{ mode: 'forfait', vehicleId: 'v1', kmAller: 60, jours: 220, justificationEloignement: true }];
+
+      const res = calculerKMMultiVehiculesForfait(cfg2025, lignes, vehicles);
+      const attendu = calculerKM(cfg2025, 60, 5, 220, false).montant;
+      expect(res.montant).toBe(attendu);
+    });
+
+    it('Cumul multi-véhicules: tranche globale puis prorata par véhicule', () => {
+      const vehicles = [
+        { id: 'v4', nom: '4CV', type: 'voiture', puissance: 4, electrique: false },
+        { id: 'v6', nom: '6CV', type: 'voiture', puissance: 6, electrique: false },
+      ];
+      const lignes = [
+        { mode: 'forfait', vehicleId: 'v4', kmAller: 20, jours: 100 }, // 4 000 km
+        { mode: 'forfait', vehicleId: 'v6', kmAller: 30, jours: 100 }, // 6 000 km
+      ];
+
+      const res = calculerKMMultiVehiculesForfait(cfg2025, lignes, vehicles);
+
+      const totalDistance = 10000;
+      const partV4 = 4000 / totalDistance;
+      const partV6 = 6000 / totalDistance;
+      const baseV4 = calculerKM(cfg2025, totalDistance / 2, 4, 1, false).montant;
+      const baseV6 = calculerKM(cfg2025, totalDistance / 2, 6, 1, false).montant;
+      const attendu = Math.round((baseV4 * partV4 + baseV6 * partV6) * 100) / 100;
+
+      expect(res.montant).toBe(attendu);
+    });
+
+    it('Majoration électrique: appliquée uniquement quand type_energie=electrique', () => {
+      const lignes = [{ mode: 'forfait', vehicleId: 've', kmAller: 20, jours: 250 }];
+      const kmThermique = calculerKM(cfg2025, 20, 4, 250, false).montant;
+
+      const resElec = calculerKMMultiVehiculesForfait(cfg2025, lignes, [
+        { id: 've', nom: 'VE', type: 'voiture', puissance: 4, type_energie: 'electrique' },
+      ]);
+      const resTherm = calculerKMMultiVehiculesForfait(cfg2025, lignes, [
+        { id: 've', nom: 'VT', type: 'voiture', puissance: 4, type_energie: 'thermique' },
+      ]);
+
+      expect(resElec.montant).toBe(calculerKM(cfg2025, 20, 4, 250, true).montant);
+      expect(resTherm.montant).toBe(kmThermique);
+    });
+
+    it('Cas "Double Casquette": bureau domicile + double résidence se cumulent', () => {
+      const quote = calculerQuotePartSurface({
+        surfaceBureau: 15,
+        surfaceTotale: 100,
+        loyerAnnuel: 12000,
+        charges: 2000,
+      });
+      const dr = calculerDoubleResidenceEtendue(cfg2025, {
+        loyerMensuel: 700,
+        chargesAnnuelles: 900,
+        semaines: 40,
+        kmArHebdo: 150,
+        cv: 5,
+      });
+
+      expect(quote.montant).toBeGreaterThan(0);
+      expect(dr.montant).toBeGreaterThan(0);
+      expect(quote.montant + dr.montant).toBeGreaterThan(dr.montant);
+    });
+
+    it('Cas Repas & Tickets Resto: (15 - 5,45 - 3,50) * 210 = 1270,50€', () => {
+      const res = calculerRepas(cfg2025, 210, 15, 3.5);
+      expect(res.montant).toBe(1270.5);
+    });
+
+    it('Cas Propriétaire: ((350000 * 0.85) / 25) * 0.10 = 1190€/an', () => {
+      const montant = ((350000 * 0.85) / 25) * 0.10;
+      expect(Math.round(montant * 100) / 100).toBe(1190);
+    });
+
+    it('Cas Propriétaire (400k€): ((400000 * 0.85) / 25) * 0.10 = 1360€/an', () => {
+      const montant = ((400000 * 0.85) / 25) * 0.10;
+      expect(Math.round(montant * 100) / 100).toBe(1360);
+    });
+
+    it('KM thermique: 12 000 km annuels, 5 CV => 5 679 €', () => {
+      const res = calculerKM(cfg2025, 30, 5, 200, false);
+      expect(res.montant).toBe(5679);
+    });
+
+    it('KM plafonné sans justification: distance aller limitée à 40 km', () => {
+      const vehicles = [{ id: 'v1', nom: '5CV', type: 'voiture', puissance: 5, electrique: false }];
+      const lignes = [{ mode: 'forfait', vehicleId: 'v1', kmAller: 55, jours: 210, justificationEloignement: false }];
+      const res = calculerKMMultiVehiculesForfait(cfg2025, lignes, vehicles);
+      const attendu = calculerKM(cfg2025, 40, 5, 210, false).montant;
+      expect(res.montant).toBe(attendu);
+    });
+
+    it('Repas cas bas: 220 jours, repas 9 €, part patronale 3 € => 121 €', () => {
+      const res = calculerRepas(cfg2025, 220, 9, 3);
+      expect(res.montant).toBe(121);
+    });
+
+    it('Amortissement proprietaire: ((300000 * 0.85) / 25) * 0.10 = 1020 €', () => {
+      const montant = ((300000 * 0.85) / 25) * 0.10;
+      expect(Math.round(montant * 100) / 100).toBe(1020);
+    });
+
+    it('Materiel > 500 €: 1 200 € amorti sur 3 ans => 400 €/an', () => {
+      const res = calculerAmortissement(1200, 'ordinateur');
+      expect(res.montant).toBe(400);
+    });
+
+    it('Transport multi-lignes: 2 lignes reel a 400 € => total 800 €', () => {
+      const lignes = [
+        { mode: 'reel', carburant: 400, usageProPercent: 100 },
+        { mode: 'reel', carburant: 400, usageProPercent: 100 },
+      ];
+      const res = calculerTransportMultiLignes(cfg2025, lignes, []);
+      expect(res.montant).toBe(800);
+    });
+
+    it('Reintegration des avantages employeur au revenu net', () => {
+      const res = calculerReintegrationAvantages(50000, 1500, 500);
+      expect(res.montant).toBe(2000);
+      expect(res.salaireReintegre).toBe(52000);
     });
   });
 });

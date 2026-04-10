@@ -14,8 +14,8 @@ export default function AlerteDistance({ visible }) {
           Distance supérieure à 40 km aller (80 km AR)
         </p>
         <p className="text-amber-700 text-xs mt-0.5">
-          Justificatif de circonstances particulières requis pour la déduction au-delà de 40 km aller
-          (art.&nbsp;83-3° du CGI). Conservez les justificatifs correspondants.
+          La déduction est limitée à 40 km (80 km AR) sauf justification de l'éloignement
+          (mutation, emploi du conjoint...).
         </p>
       </div>
     </div>
